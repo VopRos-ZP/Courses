@@ -1,28 +1,45 @@
 package ru.vopros.courses.presentation.screens.main
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import org.koin.androidx.compose.koinViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import ru.vopros.courses.presentation.components.BottomNavBar
+import ru.vopros.courses.presentation.screens.account.Account
+import ru.vopros.courses.presentation.screens.courses.Courses
+import ru.vopros.courses.presentation.screens.courses.CoursesScreen
+import ru.vopros.courses.presentation.screens.favorites.Favorites
 import ru.vopros.courses.presentation.theme.Dark
 
 @Composable
-fun MainScreen(
-    viewModel: MainViewModel = koinViewModel()
-) {
-    val courses by viewModel.courses.collectAsState()
+fun MainScreen() {
+    val navController = rememberNavController()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = Dark,
+        bottomBar = { BottomNavBar(navController) }
+    ) { innerPadding ->
+        NavHost(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            navController = navController,
+            startDestination = Courses,
+        ) {
+            composable<Courses> {
+                CoursesScreen()
+            }
+            composable<Favorites> {
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Dark)
-    )
-    LaunchedEffect(Unit) {
-        viewModel.fetchCourseList()
+            }
+            composable<Account> {
+
+            }
+        }
     }
 }
+
