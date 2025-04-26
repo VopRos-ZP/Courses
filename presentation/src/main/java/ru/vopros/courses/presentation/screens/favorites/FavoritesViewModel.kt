@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.vopros.courses.domain.model.Course
 import ru.vopros.courses.domain.usecase.DeleteFavoriteCourseUseCase
@@ -14,13 +15,23 @@ class FavoritesViewModel(
     private val deleteFavoriteCourseUseCase: DeleteFavoriteCourseUseCase,
 ) : ViewModel() {
 
-    private val _courses = MutableStateFlow<List<Course>>(emptyList())
-    val courses = _courses.asStateFlow()
+    private val _state = MutableStateFlow(FavoritesViewState())
+    val state = _state.asStateFlow()
 
-    fun fetchFavoriteCourses() {
+    init {
+        fetchFavoriteCourses()
+    }
+
+    private fun fetchFavoriteCourses() {
         viewModelScope.launch {
-            getFavoriteCourseListUseCase().collect {
-                _courses.emit(it)
+            _state.update { it.copy(isLoading = true) }
+            try {
+                getFavoriteCourseListUseCase().collect { courses ->
+                    _state.update { it.copy(courses = courses, isLoading = false) }
+                }
+            } catch (_: Exception) {
+                // show error
+                _state.update { it.copy(isLoading = false) }
             }
         }
     }

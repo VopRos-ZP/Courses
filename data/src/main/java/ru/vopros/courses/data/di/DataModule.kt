@@ -11,11 +11,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.vopros.courses.data.repository.CourseRepositoryImpl
 import ru.vopros.courses.data.repository.FavoritesRepositoryImpl
+import ru.vopros.courses.data.repository.StoreRepositoryImpl
 import ru.vopros.courses.data.retrofit.CourseApi
 import ru.vopros.courses.data.room.AppDatabase
 import ru.vopros.courses.domain.Utils
 import ru.vopros.courses.domain.repository.CourseRepository
 import ru.vopros.courses.domain.repository.FavoritesRepository
+import ru.vopros.courses.domain.repository.StoreRepository
 
 private val networkModule = module {
     single<Gson> {
@@ -58,6 +60,7 @@ private val roomModule = module {
 private val repositoryModule = module {
     singleOf(::CourseRepositoryImpl) { bind<CourseRepository>() }
     singleOf(::FavoritesRepositoryImpl) { bind<FavoritesRepository>() }
+    singleOf(::StoreRepositoryImpl) { bind<StoreRepository>() }
 }
 
 val dataModule = module {

@@ -6,6 +6,9 @@ import java.util.Locale
 
 object Utils {
 
+    const val VK_URL = "https://vk.com/"
+    const val OK_URL = "https://ok.ru/"
+
     const val BASE_URL = "https://drive.usercontent.google.com/u/0/"
     const val ID = "15arTK7XT2b7Yv4BJsmDctA4Hg-BbS8-q"
     const val EXPORT = "download"

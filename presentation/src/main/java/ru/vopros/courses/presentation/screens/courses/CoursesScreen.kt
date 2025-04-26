@@ -47,6 +47,7 @@ import org.koin.androidx.compose.koinViewModel
 import ru.vopros.courses.domain.Utils
 import ru.vopros.courses.domain.model.Course
 import ru.vopros.courses.presentation.R
+import ru.vopros.courses.presentation.components.Loader
 import ru.vopros.courses.presentation.components.TextField
 import ru.vopros.courses.presentation.theme.DarkGrey
 import ru.vopros.courses.presentation.theme.Glass
@@ -55,23 +56,21 @@ import ru.vopros.courses.presentation.theme.Glass
 
 @Composable
 fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
-    val search by viewModel.search.collectAsState()
-    val courses by viewModel.courses.collectAsState()
-    val isSorted by viewModel.isSorted.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     val lazyListState = rememberLazyListState()
 
-    LaunchedEffect(isSorted) {
+    LaunchedEffect(state.isSorted) {
         lazyListState.scrollToItem(0)
     }
 
     Column(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        SearchRow(search = search)
+        SearchRow(search = state.search)
         TextButton(
+            modifier = Modifier.align(Alignment.End),
             onClick = { viewModel.onFilterByDateClick() },
             colors = ButtonDefaults.textButtonColors(
                 containerColor = Color.Transparent,
@@ -92,27 +91,27 @@ fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
                 )
             }
         }
-        LazyColumn(
-            state = lazyListState,
-            modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(
-                items = courses,
-                key = { it.id },
-                contentType = { Utils.COURSE_CARD_CONTENT_TYPE }
+        if (state.isLoading) {
+            Loader()
+        } else {
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                CourseCard(
-                    course = it,
-                    onFavoriteClick = { viewModel.onFavoriteCourseClick(it) }
-                )
+                items(
+                    items = state.courses,
+                    key = { it.id },
+                    contentType = { Utils.COURSE_CARD_CONTENT_TYPE }
+                ) {
+                    CourseCard(
+                        course = it,
+                        onFavoriteClick = { viewModel.onFavoriteCourseClick(it) }
+                    )
+                }
             }
         }
-    }
-    LaunchedEffect(Unit) {
-        viewModel.fetchCourseList()
-        viewModel.initFavoriteCourseList()
     }
 }
 
@@ -138,7 +137,7 @@ fun CourseCard(
 }
 
 @Composable
-private fun HeaderCourseCard(
+fun HeaderCourseCard(
     course: Course,
     onFavoriteClick: () -> Unit,
 ) {
@@ -233,7 +232,7 @@ private fun HeaderCourseCard(
 }
 
 @Composable
-private fun BottomCourseCard(course: Course) {
+fun BottomCourseCard(course: Course) {
     Box(
         modifier = Modifier.padding(16.dp),
         contentAlignment = Alignment.BottomEnd

@@ -8,12 +8,17 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.serialization.Serializable
 import ru.vopros.courses.presentation.components.BottomNavBar
 import ru.vopros.courses.presentation.screens.account.Account
+import ru.vopros.courses.presentation.screens.account.AccountScreen
 import ru.vopros.courses.presentation.screens.courses.Courses
 import ru.vopros.courses.presentation.screens.courses.CoursesScreen
 import ru.vopros.courses.presentation.screens.favorites.Favorites
 import ru.vopros.courses.presentation.screens.favorites.FavoritesScreen
+
+@Serializable
+data object Main
 
 @Composable
 fun MainScreen() {
@@ -36,7 +41,7 @@ fun MainScreen() {
                 FavoritesScreen()
             }
             composable<Account> {
-
+                AccountScreen()
             }
         }
     }

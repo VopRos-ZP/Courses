@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import org.koin.androidx.compose.KoinAndroidContext
-import ru.vopros.courses.presentation.screens.main.MainScreen
+import ru.vopros.courses.presentation.screens.root.RootScreen
 import ru.vopros.courses.presentation.theme.CoursesTheme
 
 class MainActivity : ComponentActivity() {
@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             KoinAndroidContext {
                 CoursesTheme {
-                    MainScreen()
+                    RootScreen()
                 }
             }
         }

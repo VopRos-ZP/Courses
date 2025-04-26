@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.vopros.courses.domain.model.Course
 import ru.vopros.courses.domain.usecase.ContainsCourseInFavoritesUseCase
@@ -18,46 +19,67 @@ class CoursesViewModel(
     private val deleteFavoriteCourseUseCase: DeleteFavoriteCourseUseCase,
 ) : ViewModel() {
 
-    private val _search = MutableStateFlow("")
-    val search = _search.asStateFlow()
+    private val _state = MutableStateFlow(CoursesViewState())
+    val state = _state.asStateFlow()
 
-    private val _courses = MutableStateFlow<List<Course>>(emptyList())
-    val courses = _courses.asStateFlow()
+    init {
+        fetchCourseList()
+    }
 
-    private val _isSorted = MutableStateFlow(false)
-    val isSorted = _isSorted.asStateFlow()
-
-    fun fetchCourseList() {
+    private fun fetchCourseList() {
         viewModelScope.launch {
-            _courses.value = getCourseListUseCase()
+            _state.update { it.copy(isLoading = true) }
+            try {
+                val courses = getCourseListUseCase()
+                _state.update { it.copy(courses = courses, isLoading = false) }
+                initFavoriteCourseList(courses)
+            } catch (_: Exception) {
+                // show error
+                _state.update { it.copy(isLoading = false) }
+            }
         }
     }
 
-    fun initFavoriteCourseList() {
-        viewModelScope.launch {
-            courses.collect {
-                it.filter { c -> c.hasLike }.forEach { c ->
-                    if (!containsCourseInFavoritesUseCase(c))
-                        insertFavoriteCourseUseCase(c)
-                }
+    private suspend fun initFavoriteCourseList(courses: List<Course>) {
+        courses.filter { it.hasLike }.forEach { course ->
+            if (!containsCourseInFavoritesUseCase(course)) {
+                insertFavoriteCourseUseCase(course)
             }
         }
     }
 
     fun onFilterByDateClick() {
-        _courses.value = when (isSorted.value) {
-            true -> courses.value.sortedBy { it.id }
-            else -> courses.value.sortedByDescending { it.publishDate }
+        val currentState = _state.value
+        val sortedCourses = when (currentState.isSorted) {
+            true -> currentState.courses.sortedBy { it.id }
+            else -> currentState.courses.sortedByDescending { it.publishDate }
         }
-        _isSorted.value = !isSorted.value
+        _state.update {
+            it.copy(
+                courses = sortedCourses,
+                isSorted = !currentState.isSorted
+            )
+        }
     }
 
     fun onFavoriteCourseClick(course: Course) {
         viewModelScope.launch {
-            when (containsCourseInFavoritesUseCase(course)) {
+            val isFavorite = containsCourseInFavoritesUseCase(course)
+            when (isFavorite) {
                 true -> deleteFavoriteCourseUseCase(course)
                 else -> insertFavoriteCourseUseCase(course.copy(hasLike = true))
             }
+            updateCourseLikeStatus(course, !isFavorite)
+        }
+    }
+
+    private fun updateCourseLikeStatus(course: Course, hasLike: Boolean) {
+        _state.update {
+            it.copy(
+                courses = it.courses.map { c ->
+                    if (c.id == course.id) c.copy(hasLike = hasLike) else c
+                }
+            )
         }
     }
 

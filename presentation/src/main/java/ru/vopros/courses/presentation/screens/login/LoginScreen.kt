@@ -1,5 +1,6 @@
 package ru.vopros.courses.presentation.screens.login
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,12 +21,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -35,23 +38,36 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import ru.vopros.courses.presentation.R
 import ru.vopros.courses.presentation.components.TextField
-import ru.vopros.courses.presentation.theme.Dark
-import ru.vopros.courses.presentation.theme.Green
 import ru.vopros.courses.presentation.theme.OK
 import ru.vopros.courses.presentation.theme.Stroke
 import ru.vopros.courses.presentation.theme.VK
-import ru.vopros.courses.presentation.theme.White
+import androidx.core.net.toUri
+
+@Serializable
+data object Login
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = koinViewModel()
+    viewModel: LoginViewModel = koinViewModel(),
+    onLoginClick: () -> Unit,
 ) {
-    val email by viewModel.email.collectAsState()
-    val password by viewModel.password.collectAsState()
-    val isValid by viewModel.isValid.collectAsState()
+    val context = LocalContext.current
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess == true) {
+            onLoginClick()
+        }
+    }
+    LaunchedEffect(state.url) {
+        state.url?.let {
+            context.startActivity(Intent(Intent.ACTION_VIEW, it.toUri()))
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -83,7 +99,7 @@ fun LoginScreen(
                     style = MaterialTheme.typography.titleMedium
                 )
                 TextField(
-                    value = email,
+                    value = state.email,
                     onValueChange = { viewModel.onEmailChange(it) },
                     label = "example@gmail.com",
                     keyboardOptions = KeyboardOptions(
@@ -101,7 +117,7 @@ fun LoginScreen(
                     style = MaterialTheme.typography.titleMedium
                 )
                 TextField(
-                    value = password,
+                    value = state.password,
                     onValueChange = { viewModel.onPasswordChange(it) },
                     label = "Введите пароль",
                     visualTransformation = PasswordVisualTransformation(),
@@ -125,7 +141,7 @@ fun LoginScreen(
                 disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                 disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
             ),
-            enabled = isValid,
+            enabled = state.isValid,
         ) {
             Text(text = "Вход")
         }
@@ -172,7 +188,7 @@ fun LoginScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Button(
-                onClick = {},
+                onClick = { viewModel.onVkClick() },
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -189,7 +205,7 @@ fun LoginScreen(
                 )
             }
             Button(
-                onClick = {},
+                onClick = { viewModel.onOkClick() },
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
