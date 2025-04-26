@@ -41,6 +41,11 @@ class CoursesViewModel(
     }
 
     private suspend fun initFavoriteCourseList(courses: List<Course>) {
+        courses.filter { !it.hasLike }.forEach { course ->
+            if (containsCourseInFavoritesUseCase(course)) {
+                deleteFavoriteCourseUseCase(course)
+            }
+        }
         courses.filter { it.hasLike }.forEach { course ->
             if (!containsCourseInFavoritesUseCase(course)) {
                 insertFavoriteCourseUseCase(course)
