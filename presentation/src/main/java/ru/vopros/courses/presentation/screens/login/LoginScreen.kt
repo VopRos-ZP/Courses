@@ -54,15 +54,13 @@ fun LoginScreen(
     val isValid by viewModel.isValid.collectAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Dark),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
         Spacer(modifier = Modifier.height(140.dp))
         Text(
             text = "Вход",
-            color = White,
+            color = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
@@ -81,7 +79,7 @@ fun LoginScreen(
             ) {
                 Text(
                     text = "Email",
-                    color = White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.titleMedium
                 )
                 TextField(
@@ -99,7 +97,7 @@ fun LoginScreen(
             ) {
                 Text(
                     text = "Пароль",
-                    color = White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.titleMedium
                 )
                 TextField(
@@ -122,16 +120,14 @@ fun LoginScreen(
             contentPadding = PaddingValues(vertical = 10.dp),
             shape = RoundedCornerShape(100),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Green,
-                contentColor = White,
-                disabledContainerColor = Green.copy(alpha = 0.5f),
-                disabledContentColor = White.copy(alpha = 0.5f)
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
             ),
             enabled = isValid,
         ) {
-            Text(
-                text = "Вход"
-            )
+            Text(text = "Вход")
         }
         Column(
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -140,9 +136,9 @@ fun LoginScreen(
         ) {
             BasicText(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = White)) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onPrimary)) {
                         append("Нет аккаунта? ")
-                        withStyle(style = SpanStyle(color = Green)) {
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                             withLink(LinkAnnotation.Clickable("registration") {}) {
                                 append("Регистрация")
                             }
@@ -153,7 +149,7 @@ fun LoginScreen(
             )
             BasicText(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Green)) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                         withLink(LinkAnnotation.Clickable("forgot_password") {}) {
                             append("Забыл пароль")
                         }
@@ -179,7 +175,7 @@ fun LoginScreen(
                 onClick = {},
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = White,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                     containerColor = Color.Transparent
                 ),
                 modifier = Modifier
@@ -196,7 +192,7 @@ fun LoginScreen(
                 onClick = {},
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = White,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                     containerColor = Color.Transparent
                 ),
                 modifier = Modifier

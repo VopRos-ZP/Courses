@@ -1,5 +1,6 @@
 package ru.vopros.courses.data.di
 
+import androidx.room.Room
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -9,9 +10,12 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.vopros.courses.data.repository.CourseRepositoryImpl
+import ru.vopros.courses.data.repository.FavoritesRepositoryImpl
 import ru.vopros.courses.data.retrofit.CourseApi
+import ru.vopros.courses.data.room.AppDatabase
 import ru.vopros.courses.domain.Utils
 import ru.vopros.courses.domain.repository.CourseRepository
+import ru.vopros.courses.domain.repository.FavoritesRepository
 
 private val networkModule = module {
     single<Gson> {
@@ -19,7 +23,10 @@ private val networkModule = module {
             .setDateFormat("yyyy-MM-dd")
             .create()
     }
-    single<HttpLoggingInterceptor> { HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY) }
+    single<HttpLoggingInterceptor> {
+        HttpLoggingInterceptor()
+            .setLevel(HttpLoggingInterceptor.Level.BODY)
+    }
     single<OkHttpClient> {
         OkHttpClient.Builder()
             .addInterceptor(get<HttpLoggingInterceptor>())
@@ -32,16 +39,31 @@ private val networkModule = module {
             .client(get<OkHttpClient>())
             .build()
     }
-    single<CourseApi> { get<Retrofit>().create(CourseApi::class.java) }
+    single<CourseApi> {
+        get<Retrofit>()
+            .create(CourseApi::class.java)
+    }
+}
+
+private val roomModule = module {
+    single<AppDatabase> {
+        Room.databaseBuilder(
+            context = get(),
+            klass = AppDatabase::class.java,
+            name = AppDatabase.NAME
+        ).build()
+    }
 }
 
 private val repositoryModule = module {
     singleOf(::CourseRepositoryImpl) { bind<CourseRepository>() }
+    singleOf(::FavoritesRepositoryImpl) { bind<FavoritesRepository>() }
 }
 
 val dataModule = module {
     includes(
         networkModule,
+        roomModule,
         repositoryModule
     )
 }

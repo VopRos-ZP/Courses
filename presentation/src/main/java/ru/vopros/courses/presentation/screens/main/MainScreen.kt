@@ -13,14 +13,13 @@ import ru.vopros.courses.presentation.screens.account.Account
 import ru.vopros.courses.presentation.screens.courses.Courses
 import ru.vopros.courses.presentation.screens.courses.CoursesScreen
 import ru.vopros.courses.presentation.screens.favorites.Favorites
-import ru.vopros.courses.presentation.theme.Dark
+import ru.vopros.courses.presentation.screens.favorites.FavoritesScreen
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Dark,
         bottomBar = { BottomNavBar(navController) }
     ) { innerPadding ->
         NavHost(
@@ -34,7 +33,7 @@ fun MainScreen() {
                 CoursesScreen()
             }
             composable<Favorites> {
-
+                FavoritesScreen()
             }
             composable<Account> {
 
