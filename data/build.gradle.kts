@@ -44,6 +44,8 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.google.gson)
     /** Room **/
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore)
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
     /** Test **/

@@ -1,7 +1,6 @@
 package ru.vopros.courses.presentation.screens.onboarding
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,9 +26,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import ru.vopros.courses.presentation.R
-import ru.vopros.courses.presentation.theme.Dark
-import ru.vopros.courses.presentation.theme.Green
-import ru.vopros.courses.presentation.theme.White
 
 @Composable
 fun OnboardingScreen(
@@ -37,9 +33,7 @@ fun OnboardingScreen(
     onContinueClick: () -> Unit = {},
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Dark),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -50,7 +44,7 @@ fun OnboardingScreen(
         ) {
             Text(
                 text = "Тысячи курсов \nв одном месте",
-                color = White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -76,14 +70,12 @@ fun OnboardingScreen(
             contentPadding = PaddingValues(vertical = 10.dp),
             shape = RoundedCornerShape(100),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Green,
-                contentColor = White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ),
             onClick = { viewModel.onContinueClick() },
         ) {
-            Text(
-                text = "Продолжить"
-            )
+            Text(text = "Продолжить")
         }
     }
 }

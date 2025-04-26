@@ -43,7 +43,7 @@ fun BottomNavBar(navController: NavController) {
     NavigationBar(
         modifier = Modifier,
         containerColor = DarkGrey,
-        contentColor = White,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
     ) {
         topLevelRoutes.map { topLevelRoute ->
             NavigationBarItem(
@@ -74,13 +74,13 @@ fun BottomNavBar(navController: NavController) {
                 },
                 selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Green,
-                    selectedTextColor = Green,
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
                     indicatorColor = LightGrey,
-                    unselectedIconColor = White,
-                    unselectedTextColor = White,
-                    disabledIconColor = White.copy(alpha = 0.5f),
-                    disabledTextColor = White.copy(alpha = 0.5f),
+                    unselectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                    unselectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledIconColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
+                    disabledTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
                 )
             )
         }
